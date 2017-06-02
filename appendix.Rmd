@@ -26,6 +26,9 @@ We see that some of our variables (specifically MCapRate and Population) appear 
 ###Transformations
 
 Inflation looks like it needs a transformation. However, economic theory suggests a peak benefit inflation rate (with too low or too high inflation rates being detrimental to the economy). As such, we will try to make inflation a quadratic term in the model, and so do not transform it here.
+```{r,fig.height=4}
+plot(GDP_Rate ~ (Inflation) , data = econ)
+```
 
 
 We dont appear to need a tranformation to IntRate (no convincing trend appears).
@@ -34,12 +37,66 @@ We dont appear to need a tranformation to IntRate (no convincing trend appears).
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
 
-From the matrix above, it appears that MCapRate might both be curved. Examining
+From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. To determine if this is the correct transformation, we must fit a linear model and look at the residuals. \textit{To be done after other transformations.}
 
-```{r}
-par(mfrow = c(1,2))
-plot(GDP_Rate ~ (S.P500) , data = econ)
-plot(GDP_Rate ~ sqrt(S.P500) , data = econ)
-par(mfrow = c(1,1))
+```{r,fig.height=4}
+plot(GDP_Rate ~ MCapRate , data = econ)
+```
+
+Next, we check if there is a transformation needed for the population explanatory variable. There does not seem any clear indication that there needs to be a transformation based on the below plot.
+
+```{r,fig.height=4}
+plot(GDP_Rate ~ Population , data = econ)
+```
+
+Next, we check if there is a transformation needed for the primary education explanatory variable. There is some clustering we would like to get rid of. However, no transformation seems to make the relationship between GDP_Rate and PrimEducRate any better.
+
+```{r,fig.height=4}
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ PrimEducRate , data = econ)
+plot(GDP_Rate ~ sqrt(PrimEducRate) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ PrimEducRate , data = econ)
+plot(GDP_Rate ~ log(I(PrimEducRate/100)) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ PrimEducRate , data = econ)
+plot(GDP_Rate ~ I(1/(PrimEducRate)) , data = econ)
+par(mfrow=c(1,1))
+```
+
+Next, we check if there is a transformation needed for the secondary education explanatory variable. There is some clustering we would like to get rid of. However, no transformations seem to improve the fit.
+
+```{r,fig.height=4}
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ SecEducRate , data = econ)
+plot(GDP_Rate ~ log(SecEducRate) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ SecEducRate , data = econ)
+plot(GDP_Rate ~ I(1/(SecEducRate)) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ SecEducRate , data = econ)
+plot(GDP_Rate ~ sqrt(SecEducRate) , data = econ)
+par(mfrow=c(1,1))
+```
+
+Finally, we check if there is a transformation needed for the tertiary education explanatory variable. There is some clustering we would like to get rid of. However, no transformations seem to improve the fit.
+
+```{r,fig.height=4}
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ TerEducRate , data = econ)
+plot(GDP_Rate ~ log(TerEducRate) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ TerEducRate , data = econ)
+plot(GDP_Rate ~ I(1/(TerEducRate)) , data = econ)
+par(mfrow=c(1,1))
+par(mfrow=c(1,2))
+plot(GDP_Rate ~ TerEducRate , data = econ)
+plot(GDP_Rate ~ sqrt(TerEducRate) , data = econ)
+par(mfrow=c(1,1))
 ```
 
