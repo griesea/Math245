@@ -30,47 +30,11 @@ Inflation looks like it needs a transformation. However, economic theory suggest
 plot(GDP_Rate ~ (Inflation) , data = econ)
 ```
 
-
 We dont appear to need a tranformation to IntRate (no convincing trend appears).
 
 ```{r,fig.height=4}
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. To determine if this is the correct transformation, we must fit a linear model and look at the residuals. \textit{To be done after other transformations.}
 
@@ -134,4 +98,29 @@ plot(GDP_Rate ~ TerEducRate , data = econ)
 plot(GDP_Rate ~ sqrt(TerEducRate) , data = econ)
 par(mfrow=c(1,1))
 ```
+
+
+Trade ratio, poverty rate, and unemployment show no convincing needs for transformations:
+```{r, fig.height = 4}
+par(mfrow=c(1,3))
+plot(GDP_Rate ~ (TradeRatio), data=econ)
+plot(GDP_Rate ~ Unemployment, data=econ)
+plot(GDP_Rate ~ Poverty, data=econ)
+par(mfrow=c(1,1))
+```
+
+However, S.P500 might have a quadratic effect on GDP_Rate. We will test this as we fit our model. 
+```{r}
+plot(GDP_Rate ~ (S.P500) , data = econ)
+```
+
+
+###Preliminary Linear Model
+
+Fitting only linear terms:
+```{r}
+test.lm1 <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(test.lm1)
+```
+
 
