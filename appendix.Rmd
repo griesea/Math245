@@ -25,7 +25,7 @@ We see that some of our variables (specifically MCapRate and Population) appear 
 
 ###Transformations
 
-Inflation looks like it needs a transformation. However, economic theory suggests a peak benefit inflation rate (with too low or too high inflation rates being detrimental to the economy). As such, we will try to make inflation a quadratic term in the model, and so do not transform it here.
+Inflation looks like it needs a transformation. However, economic theory suggests an interaction between inflation rate and interest rate. We will investigate this below.
 ```{r,fig.height=4}
 plot(GDP_Rate ~ (Inflation) , data = econ)
 ```
@@ -36,7 +36,7 @@ We dont appear to need a tranformation to IntRate (no convincing trend appears).
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
 
-From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. To determine if this is the correct transformation, we must fit a linear model and look at the residuals. \textit{To be done after other transformations.}
+From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. We will thus include a quadratic term in our model.
 
 ```{r,fig.height=4}
 plot(GDP_Rate ~ MCapRate , data = econ)
@@ -54,12 +54,10 @@ Next, we check if there is a transformation needed for the primary education exp
 par(mfrow=c(1,2))
 plot(GDP_Rate ~ PrimEducRate , data = econ)
 plot(GDP_Rate ~ sqrt(PrimEducRate) , data = econ)
-par(mfrow=c(1,1))
-par(mfrow=c(1,2))
+
 plot(GDP_Rate ~ PrimEducRate , data = econ)
 plot(GDP_Rate ~ log(I(PrimEducRate/100)) , data = econ)
-par(mfrow=c(1,1))
-par(mfrow=c(1,2))
+
 plot(GDP_Rate ~ PrimEducRate , data = econ)
 plot(GDP_Rate ~ I(1/(PrimEducRate)) , data = econ)
 par(mfrow=c(1,1))
@@ -109,18 +107,61 @@ plot(GDP_Rate ~ Poverty, data=econ)
 par(mfrow=c(1,1))
 ```
 
-However, S.P500 might have a quadratic effect on GDP_Rate. We will test this as we fit our model. 
+S.P500 looks like it might have a quadratic effect. We will add this term in our model.
 ```{r}
 plot(GDP_Rate ~ (S.P500) , data = econ)
 ```
 
+###Checking for interaction terms
+
+Economic theory suggests that there should be an interaction term between interest rate and inflation. Testing this: 
+
+```{r}
+xyplot(GDP_Rate ~ Inflation | equal.count(IntRate), data=econ)
+```
+
+We do see a slight shift in the effect of inflation on GDP rate at differing interest rates. It seems that inflation is better for GDP rate at lower interest rates (i.e. the effect of inflation is more positive). We will thus include this interaction term.
 
 ###Preliminary Linear Model
 
-Fitting only linear terms:
+Fitting the linear model we decided upon above: 
 ```{r}
-test.lm1 <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+test.lm1 <- lm(GDP_Rate ~ Inflation*IntRate + PrimEducRate +SecEducRate + TerEducRate + I(MCapRate^2)+ MCapRate + Population + TradeRatio + Unemployment + I(S.P500^2) + S.P500 + Poverty +President + Senate + House, data = econ)
 summary(test.lm1)
 ```
 
+
+###Checking Residual Plots
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Resudual plots for Population, Trade Ratio and unemployment appear to have no obvious trends and be evenly distributed around 0. This justifies our decision to not transform these variables.
+```{r}
+par(mfrow = c(1,3))
+plot(resid(test.lm1) ~ econ$Population)
+abline(h=0)
+plot(resid(test.lm1) ~ econ$TradeRatio)
+abline(h=0)
+plot(resid(test.lm1) ~ econ$Unemployment)
+abline(h=0)
+par(mfrow = c(1,1))
+```
+
+```{r}
+plot(resid(test.lm1) ~ econ$Unemployment)
+abline(h=0)
+```
 
