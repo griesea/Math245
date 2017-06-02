@@ -8,11 +8,7 @@ output: pdf_document
 ```{r}
 library(car)
 library(lattice)
-#econ <- read.csv("/Users/alexgriese/College/Math/Applied Regression Analysis/Final Project/finaldata.csv", header = TRUE, sep = ",")
-econ <- read.csv("finaldata.csv", header = TRUE, sep = ",")
-
-
-
+econ <- read.csv("https://raw.githubusercontent.com/griesea/Math245/master/finaldata.csv", header = TRUE, sep = ",")
 #Creating ratio of imports to exports
 econ$TradeRatio <- econ$Imports/econ$Exports
 econ
