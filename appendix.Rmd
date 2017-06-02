@@ -34,12 +34,26 @@ We dont appear to need a tranformation to IntRate (no convincing trend appears).
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
 
-From the matrix above, it appears that MCapRate might both be curved. Examining
 
+Trade ratio, poverty rate, and unemployment show no convincing needs for transformations:
+```{r, fig.height = 4}
+par(mfrow=c(1,3))
+plot(GDP_Rate ~ (TradeRatio), data=econ)
+plot(GDP_Rate ~ Unemployment, data=econ)
+plot(GDP_Rate ~ Poverty, data=econ)
+par(mfrow=c(1,1))
+```
+
+However, S.P500 might have a quadratic effect on GDP_Rate. We will test this as we fit our model. 
+
+
+###Preliminary Linear Model
 ```{r}
+#test.lm1 <- lm(GDP_Rate ~ )
 par(mfrow = c(1,2))
 plot(GDP_Rate ~ (S.P500) , data = econ)
-plot(GDP_Rate ~ sqrt(S.P500) , data = econ)
+#plot(GDP_Rate ~ sqrt(S.P500) , data = econ)
 par(mfrow = c(1,1))
+```
 ```
 
