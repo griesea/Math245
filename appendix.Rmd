@@ -8,7 +8,10 @@ output: pdf_document
 ```{r}
 library(car)
 library(lattice)
-econ <- read.csv("/Users/alexgriese/College/Math/Applied Regression Analysis/Final Project/finaldata.csv", header = TRUE, sep = ",")
+#econ <- read.csv("/Users/alexgriese/College/Math/Applied Regression Analysis/Final Project/finaldata.csv", header = TRUE, sep = ",")
+econ <- read.csv("finaldata.csv", header = TRUE, sep = ",")
+
+
 
 #Creating ratio of imports to exports
 econ$TradeRatio <- econ$Imports/econ$Exports
@@ -26,22 +29,27 @@ We see that some of our variables (specifically MCapRate and Population) appear 
 
 A transformations is needed to Inflation. It seems a log transformation aids somewhat in creating a better relationship between GDP_Rate and Inflation. \textit{Note:} in order to have a log transformation, we must insure that all the inflation data points are positive. There is one data point less than 0$-$ -0.36\% to be exact$-$as such we merely add 1 to every variable in the data set.
 
-```{r,fig.height=4}
+Interest Rate might 
 
+```{r,fig.height=4}
 par(mfrow = c(1,2))
 plot(GDP_Rate ~ (Inflation) , data = econ)
 plot(GDP_Rate ~ log(I(Inflation+1)) , data = econ)
 par(mfrow = c(1,1))
 ```
 
-A transformations is needed to IntRate It seems a log transformation aids somewhat in creating a better relationship between GDP_Rate and Inflation. \textit{Note:} in order to have a log transformation, we must insure that all the IntRate data points are positive. There is one data point less than 0$-$ -1.28\% to be exact$-$as such we merely add 1.29 to every variable in the data set.
-
-IntRate might have some kind of interaction term (with what?)
+We dont appear to need a tranformation to IntRate (no convincing trend appears).
 
 ```{r,fig.height=4}
-
-par(mfrow = c(1,2))
 plot(GDP_Rate ~ (IntRate) , data = econ)
-plot(GDP_Rate ~ log(I(Inflation+1.29)) , data = econ)
+```
+
+From the matrix above, it appears that both S.P500 and MCapRate might both be curved. Examining
+
+```{r}
+par(mfrow = c(1,2))
+plot(GDP_Rate ~ (S.P500) , data = econ)
+plot(GDP_Rate ~ sqrt(S.P500) , data = econ)
 par(mfrow = c(1,1))
 ```
+
