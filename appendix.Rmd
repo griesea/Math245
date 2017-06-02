@@ -37,6 +37,41 @@ We dont appear to need a tranformation to IntRate (no convincing trend appears).
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. To determine if this is the correct transformation, we must fit a linear model and look at the residuals. \textit{To be done after other transformations.}
 
 ```{r,fig.height=4}
