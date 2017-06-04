@@ -215,21 +215,23 @@ par(mfrow=c(1,1))
 
 Now we check for case influence stats. We notice that case 6, which is the year 1980 is exerting large influence on our model as it has a Cook's distance of 1.5. As such, we remove the point from our data set.
 ```{r, fig.height=4}
+cooks.distance(test.lm1)
 plot(test.lm1,which=5)
 plot(test.lm1,which=4)
-econ<-econ[-6,]
+econ1<-econ[-6,]
 ```
 
 Cases 5 and 8 (years) have large Cook's distances but leverage less than 2*p/n. However, case 8 does have a student residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases.
 ```{r, fig.height=4}
-econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ1)
 summary(econ.lm)
+cooks.distance(econ.lm)
 2*15/35
 hatvalues(econ.lm)
 par(mfrow=c(1,3))
 plot(econ.lm,which=5)
 plot(econ.lm,which=4)
-plot(resid(econ.lm) ~ fitted(econ.lm), data = econ)
+plot(resid(econ.lm) ~ fitted(econ.lm))
 par(mfrow=c(1,1))
 ```
 
@@ -237,7 +239,7 @@ par(mfrow=c(1,1))
 
 ###Assumptions
 
-Before we can proceed with backwards selection, we must check the assumptions of our model. The QQ plot has some skewedness in both tails. However, the distribution of the residuals seems to be pretty normal. There is a small amount of left skewedness but it is not too bad. However, it seems there may be autocorrelation, as residuals closer together seem more alike than those farther apart (especially after say 1995). Also, on the basis of a Durbin Watson test, we conclude that there is no postive or negative autocorrleation at a 5\% level of significance. Based on all this info, we conclude the model assumptions are more or less met.
+Before we can proceed with backwards selection, we must check the assumptions of our model. The QQ plot has some skewedness in both tails. However, the distribution of the residuals seems to be pretty normal. There is a small amount of left skewedness but it is not too bad. However, it seems there may be autocorrelation, as residuals closer together seem more alike than those farther apart (especially after say 1995). Also, on the basis of a Durbin Watson test, we conclude that there is no postive or negative autocorrleation at a 5\% level of significance due to a p-value of 0.578. Based on all this info, we conclude the model assumptions are more or less met.
 
 ```{r, fig.height = 4}
 par(mfrow=c(1,3))
@@ -246,7 +248,7 @@ hist(resid(econ.lm))
 qqnorm(resid(econ.lm))
 qqline(resid(econ.lm))
 par(mfrow=c(1,1))
-plot(resid(econ.lm)~YEAR, data=econ)
+plot(resid(econ.lm)~YEAR, data=econ1)
 abline(h=0)
 durbinWatsonTest(econ.lm)
 ```
@@ -272,9 +274,24 @@ econ2.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + MCapRate+ Populatio
 anova(econ1.lm,econ2.lm)
 ```
 
+###Case Influence Stats
+
+Due to a studentized residual of about -2 and a Cook's distance of nearly 1, we exclude case 5 or the year 1979 from the data set and refit. We now find that case 1 or year 1975 must also be removed due to a Cook's distance that is greater than 1.
+```{r, fig.height=4}
+plot(econ1.lm,which=5)
+cooks.distance(econ1.lm)
+econ<-econ[-5,]
+econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+plot(econ1.lm,which=5)
+econ<-econ[-1,]
+econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+plot(econ1.lm,which=5)
+```
+
+
 
 ### Assumptions
-The distribution of the residuals does seemed to be skewed left. The qqplot does confirm the skewedness of the data. On the basis of the residual plot, normality and constant variance seems to be satisfied. Finally, the Durbin Watson test confirms that there is no autocorrelation.
+The distribution of the residuals does seem to be relatively normal. After removing the insiginificant terms and influential cases, normality seems to be violated on the basis of the qqplot. On the basis of the residual plot, normality and constant variance seems to be satisfied. Finally, the Durbin Watson test confirms that there is no autocorrelation.
 
 ```{r, fig.height = 4}
 par(mfrow=c(1,3))
@@ -289,11 +306,16 @@ durbinWatsonTest(econ1.lm)
 ```
 
 
+### Final model
+
+After removing the influential cases, we notice that the standard errors of the model have spiked causing many previously significant terms to become significant. Thus, we will to check if the large standard errors are due to collinearity. 
+```{r}
+summary(econ1.lm)
+vif(econ1.lm)
+scatterplotMatrix(~Inflation + IntRate + MCapRate, data = econ)
+```
 
 
 
-
-
-###Case Influence Stats
 
 
