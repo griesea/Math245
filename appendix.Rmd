@@ -25,16 +25,18 @@ We see that some of our variables (specifically MCapRate and Population) appear 
 
 ###Transformations
 
-Inflation looks like it needs a transformation. However, economic theory suggests a peak benefit inflation rate (with too low or too high inflation rates being detrimental to the economy). As such, we will try to make inflation a quadratic term in the model, and so do not transform it here.
-```{r,fig.height=4}
-plot(GDP_Rate ~ (Inflation) , data = econ)
-```
-
 We dont appear to need a tranformation to IntRate (no convincing trend appears).
 
 ```{r,fig.height=4}
 plot(GDP_Rate ~ (IntRate) , data = econ)
 ```
+
+Inflation looks like it needs a transformation. However, economic theory suggests a peak benefit inflation rate (with too low or too high inflation rates being detrimental to the economy). As such, we will try to make inflation a quadratic term in the model, and so do not transform it here.
+```{r,fig.height=4}
+plot(GDP_Rate ~ (Inflation) , data = econ)
+```
+
+
 
 From the matrix above, it appears that MCapRate might both be curved. We examine this trend further, below. There looks to be a parabolic relationship between GDP_Rate and MCapRate. To determine if this is the correct transformation, we must fit a linear model and look at the residuals. \textit{To be done after other transformations.}
 
@@ -126,65 +128,101 @@ summary(test.lm1)
 
 ### Checking Residual Plots
 
-First, we check the residual plot of our linear model against the real interest rate. There seems to be some sort of positive parabolic relationship. However, after plotting the residuals against $IntRate^2$ we conclude there is no transformation to be done.
+First, we check the residual plot of our linear model against the real interest rate. It seems, as though the residuals are positive at the extreme values of interest rate and negative towards the middle (4%). As such, we check for a parabolic relationship.  However, there seems to be no conclusive evidence that the parabolic transformation is useful.
 ```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + I(IntRate^2)+ PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
 plot(resid(test.lm1) ~ (IntRate) , data = econ)
-plot(resid(test.lm1) ~ I(IntRate^2) , data = econ)
+plot(resid(testTrans.lm) ~ IntRate, data = econ)
 par(mfrow=c(1,1))
 ```
 
 Second, we check the residual plot of our linear model against inflation. From before, using economic theory we would expect there to be a parabolic relationship. However, transforming inflation does not improve the fit and we proceed with the original model.
 ```{r,fig.height=4}
-test.lm2 <- lm(GDP_Rate ~ I(Inflation^2) + Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
-summary(test.lm2)
+testTrans.lm <- lm(GDP_Rate ~ I(Inflation^2)+Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
-plot(resid(test.lm1) ~ (Inflation) , data = econ)
-plot(resid(test.lm2) ~ Inflation, data = econ)
+plot(resid(test.lm1) ~ Inflation , data = econ)
+plot(resid(testTrans.lm) ~ Inflation, data = econ)
 par(mfrow=c(1,1))
 ```
 
 Next, we check the residual plot of our linear model against PrimEducRate. However, as expected there is no transformation that improves the residuals.
 ```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + log(PrimEducRate) +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
 plot(resid(test.lm1) ~ (PrimEducRate) , data = econ)
-plot(resid(test.lm1) ~ log(PrimEducRate), data = econ)
+plot(resid(testTrans.lm) ~ log(PrimEducRate), data = econ)
 par(mfrow=c(1,1))
 ```
 
 
 Next, we check the residual plot of our linear model against SecEducRate. However, as expected there is no transformation that improves the residuals.
 ```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + log(SecEducRate) +TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
 plot(resid(test.lm1) ~ (SecEducRate) , data = econ)
-plot(resid(test.lm1) ~ log(SecEducRate), data = econ)
+plot(resid(testTrans.lm) ~ log(SecEducRate), data = econ)
 par(mfrow=c(1,1))
 ```
 
 
 Next, we check the residual plot of our linear model against TerEducRate. However, as expected there is no transformation that improves the residuals.
 ```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + log(TerEducRate) + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
 plot(resid(test.lm1) ~ (TerEducRate) , data = econ)
-plot(resid(test.lm1) ~ log(TerEducRate), data = econ)
+plot(resid(testTrans.lm) ~ log(TerEducRate), data = econ)
 par(mfrow=c(1,1))
 ```
 
 
-Next, we check the residual plot of our linear model against MCapRate. We noticed a parabolic relationship previously and check for this. However, on the basis of the residual plot this seems to be inappropriate. As such, we check for a log transformation instead. However, this makes no improvement in the residual plot, so we proceed without a transformation.
+Next, we check the residual plot of our linear model against MCapRate. We noticed a parabolic relationship previously and check for this. However, on the basis of the residual plot this seems to be inappropriate. As such, we check for a log transformation instead. However, this does not improve the fit and we move forward with no transformation.
 ```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + TerEducRate +log(MCapRate)+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
+summary(testTrans.lm)
 par(mfrow=c(1,2))
 plot(resid(test.lm1) ~ MCapRate, data = econ)
-plot(resid(test.lm1) ~ log(MCapRate), data = econ)
+abline(h=0)
+plot(resid(testTrans.lm) ~ log(MCapRate), data = econ)
+abline(h=0)
 par(mfrow=c(1,1))
 ```
 
-Next, we check the residual plot of our linear model against Population. As expected, we conclude there is no transformation to be performed.
+Next, we check the residual plot of our linear model against Population, Poverty, TradeRatio and Unemployment. As expected, we conclude there is no transformation to be performed.
 ```{r,fig.height=4}
-par(mfrow=c(1,2))
+par(mfrow=c(1,4))
 plot(resid(test.lm1) ~ Population, data = econ)
-plot(resid(test.lm1) ~ log(Population), data = econ)
+abline(h=0)
+plot(resid(test.lm1) ~ TradeRatio, data = econ)
+abline(h=0)
+plot(resid(test.lm1) ~ Unemployment, data = econ)
+abline(h=0)
+plot(resid(test.lm1) ~ Poverty, data = econ)
+abline(h=0)
 par(mfrow=c(1,1))
 ```
+
+Next, we check the residual plot of our linear model against S.P500. We noted a potential parabolic relationship previously, as such we check the residual plot. On the basis of the residual plot, a parabolic transformation seems inappropriate. However, there may be a need for a log transformation. This is wildly inappropriate and we move forward with no transformation.
+```{r,fig.height=4}
+testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + TerEducRate +MCapRate+ Population + TradeRatio + Unemployment + log(I(S.P500+.37))+ Poverty +President + Senate + House, data = econ)
+par(mfrow=c(1,2))
+plot(resid(test.lm1) ~ S.P500, data = econ)
+plot(resid(testTrans.lm) ~ log(I(S.P500+.37)), data = econ)
+par(mfrow=c(1,1))
+```
+
+Next, we check the residual plot of our linear model against Poverty. As expected, we conclude there is no transformation to be performed.
+```{r,fig.height=4}
+par(mfrow=c(1,2))
+plot(resid(test.lm1) ~ Poverty, data = econ)
+plot(resid(test.lm1) ~ log(Poverty), data = econ)
+par(mfrow=c(1,1))
+```
+
 
 
