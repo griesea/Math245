@@ -320,9 +320,11 @@ plot(econ1.lm, which=1)
 qqnorm(resid(econ1.lm))
 qqline(resid(econ1.lm))
 plot(resid(econ1.lm)~YEAR, data=econ2, ylab="Residuals for Linear Model", main="Residuals against Year")
+abline(h=0)
 par(mfrow=c(1,1))
 library(stargazer)
 stargazer(econ1.lm,single.row=TRUE)
+plot(econ1.lm, which=5)
 ```
 
 
