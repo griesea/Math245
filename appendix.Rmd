@@ -274,3 +274,26 @@ anova(econ1.lm,econ2.lm)
 
 
 ### Assumptions
+The distribution of the residuals does seemed to be skewed left. The qqplot does confirm the skewedness of the data. On the basis of the residual plot, normality and constant variance seems to be satisfied. Finally, the Durbin Watson test confirms that there is no autocorrelation.
+
+```{r, fig.height = 4}
+par(mfrow=c(1,3))
+plot(econ1.lm, which=1)
+hist(resid(econ1.lm))
+qqnorm(resid(econ1.lm))
+qqline(resid(econ1.lm))
+par(mfrow=c(1,1))
+plot(resid(econ1.lm)~YEAR, data=econ)
+abline(h=0)
+durbinWatsonTest(econ1.lm)
+```
+
+
+
+
+
+
+
+###Case Influence Stats
+
+
