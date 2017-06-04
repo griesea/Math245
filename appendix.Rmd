@@ -220,7 +220,7 @@ plot(test.lm1,which=4)
 econ<-econ[-6,]
 ```
 
-Cases 5 and 8 have large Cook's distances but leverage less than 2*p/n. However, case 8 does have a student residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases.
+Cases 5 and 8 (years) have large Cook's distances but leverage less than 2*p/n. However, case 8 does have a student residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases.
 ```{r, fig.height=4}
 econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
 summary(test.lm1)
