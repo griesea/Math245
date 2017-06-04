@@ -158,7 +158,7 @@ par(mfrow=c(1,1))
 Next, we check the residual plot of our linear model against S.P500. We noted a potential parabolic relationship previously, as such we check the residual plot. On the basis of the residual plot, a parabolic transformation seems inappropriate. However, there may be a need for a log transformation. This is wildly inappropriate and we move forward with no transformation.
 ```{r,fig.height=4}
 testTrans.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + TerEducRate +MCapRate+ Population + TradeRatio + Unemployment + log(I(S.P500+.37))+ Poverty +President + Senate + House, data = econ)
-testTrans1.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + TerEducRate +MCapRate+ Population + TradeRatio + Unemployment + I(S.P500^2) + Poverty +President + Senate + House, data = econ)
+testTrans1.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + SecEducRate + TerEducRate +MCapRate+ Population + TradeRatio + Unemployment + I(S.P500^2) + S.P500 + Poverty +President + Senate + House, data = econ)
 par(mfrow=c(1,3))
 plot(resid(test.lm1) ~ S.P500, data = econ)
 abline(h=0)
