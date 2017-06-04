@@ -11,6 +11,7 @@ library(lattice)
 econ <- read.csv("https://raw.githubusercontent.com/griesea/Math245/master/finaldata.csv", header = TRUE, sep = ",")
 #Creating ratio of imports to exports
 econ$TradeRatio <- econ$Imports/econ$Exports
+econ$Population <- econ$Population/1000000
 econ
 ```
 
@@ -213,7 +214,7 @@ par(mfrow=c(1,1))
 
 ###Case Influence Stats
 
-Now we check for case influence stats. We notice that case 6, which is the year 1980 is exerting large influence on our model as it has a Cook's distance of 1.5. As such, we remove the point from our data set due to really high inflation.
+Now we check for case influence stats. We notice that case 6, which is the year 1980 is exerting large influence on our model as it has a Cook's distance of 1.5. This is due to the very high inflation during this year. As such, we remove the point from our data set due to really high inflation.
 ```{r, fig.height=4}
 cooks.distance(test.lm1)
 plot(test.lm1,which=5)
@@ -222,7 +223,7 @@ econ[6,]
 econ1<-econ[-6,]
 ```
 
-Cases 5 and 8 (years) have relatively large Cook's distances but leverage less than 2*p/n. However, case 8 does have a studentized residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases. The high Cook's distance value is most likely due to high inflation in both years, especially in 1979.
+Cases 5 and 8 (corresponding to 1979 and 1982) have relatively large Cook's distances but leverage less than 2*p/n. However, case 8 does have a studentized residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases. The high Cook's distance value is most likely due to high inflation in both years, especially in 1979.
 ```{r, fig.height=4}
 econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ1)
 summary(econ.lm)
@@ -242,7 +243,7 @@ econ[8,]
 
 ###Assumptions
 
-Before we can proceed with backwards selection, we must check the assumptions of our model. The QQ plot has some skewedness in both tails. However, the distribution of the residuals seems to be pretty normal. There is a small amount of left skewedness but it is not too bad. However, it seems there may be autocorrelation, as residuals closer together seem more alike than those farther apart (especially after say 1995). Also, on the basis of a Durbin Watson test, we conclude that there is no postive or negative autocorrleation at a 5\% level of significance due to a p-value of 0.578. Based on all this info, we conclude the model assumptions are more or less met.
+Before we can proceed with backwards selection, we must check the assumptions of our model. The QQ plot has some skewedness in both tails. However, the distribution of the residuals seems to be pretty normal. There is a small amount of left skewedness but it is not too bad. The plots of residuals vs. year, however, support the idea that our model satisfies the independence assumption. It doesn't really appear nearby years are clustered close to each other, possibly as a result of using growth rates instead of raw values. Hence, the independence assumption appears to hold.
 
 ```{r, fig.height = 4}
 par(mfrow=c(1,3))
@@ -253,7 +254,6 @@ qqline(resid(econ.lm))
 par(mfrow=c(1,1))
 plot(resid(econ.lm)~YEAR, data=econ1)
 abline(h=0)
-durbinWatsonTest(econ.lm)
 ```
 
 
@@ -268,7 +268,7 @@ econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEdu
 anova(econ1.lm,econ.lm)
 ```
 
-We know that high collinearity suggests that the standard errors for coefficients may be larger than usual. Thus, the high VIF value (>5) for SecEducRate may explain its insignificance. Despite all the very large VIF values, every coefficient/explanatory variable is otherwise significant. The standard errors are also relatively small despite the high levels of collinearity. To check for the significance of SecEducRate, we theorize that only PrimEducRate siginificantly impacts GDP. However, the ANOVA F-test shows that this theory is very wrong, as the p-value of excluding both TerEducRate and SecEducRate is .00159. Thus, we reject the null hypothesis at a 5\% level of significance that the reduced model is adequate. With no theoretical reason to remove SecEducRate, we seek to include it in our model despite the high t-statistic of 3.812. We attribute this high t-statistic value to the corresponding high VIF value. Thus, this is our final model.
+We know that high collinearity suggests that the standard errors for coefficients may be larger than usual. Thus, the high VIF value (>5) for SecEducRate may explain its insignificance. Despite all the very large VIF values, every coefficient/explanatory variable is otherwise significant - i.e. the standard errors are relatively small despite the high levels of collinearity. To check for the significance of SecEducRate, we theorize that only PrimEducRate siginificantly impacts GDP. However, the ANOVA F-test shows that this theory is very wrong, as the p-value of excluding both TerEducRate and SecEducRate is .00159. Thus, we reject the null hypothesis at a 5\% level of significance that the reduced model is adequate. With no theoretical reason to remove SecEducRate, we seek to include it in our model despite the high t-statistic of 3.812. We attribute this high t-statistic value to the corresponding high VIF value. Thus, this is our final model.
 
 ```{r}
 summary(econ1.lm)
@@ -293,7 +293,7 @@ summary(econ1.lm)
 
 
 ### Assumptions
-The distribution of the residuals does seem to be relatively normal. After removing the insiginificant terms and influential cases, normality seems to be violated on the basis of the qqplot. On the basis of the residual plot, normality and constant variance seems to be satisfied. Finally, the Durbin Watson test confirms that there is no autocorrelation.
+The distribution of the residuals does seem to be relatively normal. After removing the insiginificant terms and influential cases, normality seems to be violated on the basis of the qqplot. On the basis of the residual plot, normality and constant variance seems to be satisfied. Once again, our data shows no obvious signs of clustering in groups of nearby years. Hence, independence also seems to be satisfied.
 
 ```{r, fig.height = 4}
 par(mfrow=c(1,3))
@@ -302,9 +302,9 @@ hist(resid(econ1.lm))
 qqnorm(resid(econ1.lm))
 qqline(resid(econ1.lm))
 par(mfrow=c(1,1))
+
 plot(resid(econ1.lm)~YEAR, data=econ2)
 abline(h=0)
-durbinWatsonTest(econ1.lm)
 ```
 
 
@@ -322,18 +322,41 @@ summary(econ1.lm)
 
 ### Tables and Graphs for Paper
 
+Model summary:
 ```{r}
-par(mfrow=c(1,3))
-plot(econ1.lm, which=1)
-qqnorm(resid(econ1.lm))
-qqline(resid(econ1.lm))
-plot(resid(econ1.lm)~YEAR, data=econ2, ylab="Residuals for Linear Model", main="Residuals against Year")
-abline(h=0)
-par(mfrow=c(1,1))
 library(stargazer)
 stargazer(econ1.lm,single.row=TRUE)
-plot(econ1.lm, which=5)
+```
+
+Plot of GDP growth vs. S\&P 500 returns. Financial crisis years (2008, 2009) are squares
+```{r, fig.height = 3.5, fig.width = 5.5}
+econ2Nocrisis <- econ[-c(5,6,30,31),]
+econcrisis <- econ[c(30,31),] 
+scatterplot(GDP_Rate ~ S.P500 , data=econ2, boxplots = F, smoother=F, xlab = "S&P 500 Annual Total Returns", ylab = "GDP Growth Rate", main = "Plot of GDP growth rate against annual returns of the S&P 500", cex.main = 0.9, ylim = c(-3,6), xlim = c(-0.4,0.4))
+
+points(econcrisis$S.P500, econcrisis$GDP_Rate, pch =15)
 ```
 
 
+```{r, fig.height = 3.5, fig.width = 5.5}
+par(mfrow =c(1,2) ,oma = c(0, 0, 1, 0))
+plot(GDP_Rate ~ YEAR , data=econ2, xlab = "YEAR", ylab = "GDP Growth Rate (%)", cex.main = 0.85)
 
+plot(GDP_Rate ~ Population , data=econ2, xlab = "Total Population (Millions)", ylab = "GDP Growth Rate (%)", cex.main = 0.85)
+par(mfrow = c(1,1))
+
+mtext("GDP growth rate variation with time and population",  outer = F, cex = 1, side = 3, adj = 0.65, padj = -1.5)
+```
+
+Plot to show inflation vs. GDP rate (w/ 1979, 1980 shown).
+```{r, fig.height = 3.5, fig.width = 5.5}
+econcut <- econ[c(5,6),]
+plot(GDP_Rate ~ Inflation , data=econ2, xlab = "CPI Inflation Rate (%)", ylab = "GDP Growth Rate (%)", main ="GDP growth rate against Consumer Price Index (CPI) inflation rate", cex.main = 0.85, xlim = c(-0.5, 13.7))
+
+points(econcut$Inflation, econcut$GDP_Rate, pch = 17)
+points(econcrisis$Inflation, econcrisis$GDP_Rate, pch = 15)
+```
+
+```{r, fig.height = 3.5, fig.width = 5.5}
+plot(GDP_Rate ~ MCapRate , data=econ2, xlab = "Market Cap. Growth Rate (%)", ylab = "GDP Growth Rate (%)",main = "Plot of annual GDP growth rate against total market capitalization growth", cex.main = 0.8)
+``` 
