@@ -256,36 +256,34 @@ durbinWatsonTest(econ.lm)
 
 ###Backwards Selection
 
-Not surprisingly, we notice that our categorical political categorical variables are insignificant. Due to the presence of some collinearity, we conduct an ANOVA F test on all three to determine if any are worth including in our model. With a p-value of .61, we fail to reject the null hypothesis that the reduced model is adequate at a 5\% level of significance. As such, we exclude all the political categorical variables.
+Not surprisingly, we notice that our categorical political categorical variables are insignificant. Due to the presence of some collinearity, we conduct an ANOVA F test on all three to determine if any are worth including in our model. With a p-value of .5791, we fail to reject the null hypothesis that the reduced model is adequate at a 5\% level of significance. As such, we exclude all the political categorical variables.
 
 ```{r}
 summary(econ.lm)
 vif(econ.lm)
-econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ1)
 anova(econ1.lm,econ.lm)
 ```
 
-We know that high collinearity suggests that the standard errors for coefficients may be larger than usual. Thus, the high VIF value (>5) for SecEducRate may explain its insignificance. Despite all the very large VIF values, every coefficient/explanatory variable is otherwise significant. The standard errors are also relatively small despite the high levels of collinearity. To check for the significance of SecEducRate, we theorize that only PrimEducRate siginificantly impacts GDP. However, the ANOVA F-test shows that this theory is very wrong, as the p-value of excluding both TerEducRate and SecEducRate is .006. Thus, we reject the null hypothesis at a 5\% level of significance that the reduced model is adequate. With no theoretical reason to remove SecEducRate, we seek to include it in our model despite the high t-statistic of 3.812. We attribute this high t-statistic value to the corresponding high VIF value. Thus, this is our final model.
+We know that high collinearity suggests that the standard errors for coefficients may be larger than usual. Thus, the high VIF value (>5) for SecEducRate may explain its insignificance. Despite all the very large VIF values, every coefficient/explanatory variable is otherwise significant. The standard errors are also relatively small despite the high levels of collinearity. To check for the significance of SecEducRate, we theorize that only PrimEducRate siginificantly impacts GDP. However, the ANOVA F-test shows that this theory is very wrong, as the p-value of excluding both TerEducRate and SecEducRate is .00159. Thus, we reject the null hypothesis at a 5\% level of significance that the reduced model is adequate. With no theoretical reason to remove SecEducRate, we seek to include it in our model despite the high t-statistic of 3.812. We attribute this high t-statistic value to the corresponding high VIF value. Thus, this is our final model.
 
 ```{r}
 summary(econ1.lm)
 vif(econ1.lm)
-econ2.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+econ2.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ1)
 anova(econ1.lm,econ2.lm)
 ```
 
 ###Case Influence Stats
 
-Due to a studentized residual of about -2 and a Cook's distance of nearly 1, we exclude case 5 or the year 1979 from the data set and refit. We now find that case 1 or year 1975 must also be removed due to a Cook's distance that is greater than 1.
+Due to a studentized residual of about -2 and a Cook's distance of nearly 1, we exclude case 5 or the year 1979 from the data set and refit. There are no other significant cases and we move forward this data set and model. Additionally, with the exclusion of this data point we now find SecEducRate is significant.
 ```{r, fig.height=4}
 plot(econ1.lm,which=5)
 cooks.distance(econ1.lm)
-econ<-econ[-5,]
-econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+econ2<-econ1[-5,]
+econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ2)
 plot(econ1.lm,which=5)
-econ<-econ[-1,]
-econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
-plot(econ1.lm,which=5)
+summary(econ1.lm)
 ```
 
 
@@ -300,7 +298,7 @@ hist(resid(econ1.lm))
 qqnorm(resid(econ1.lm))
 qqline(resid(econ1.lm))
 par(mfrow=c(1,1))
-plot(resid(econ1.lm)~YEAR, data=econ)
+plot(resid(econ1.lm)~YEAR, data=econ2)
 abline(h=0)
 durbinWatsonTest(econ1.lm)
 ```
@@ -308,11 +306,9 @@ durbinWatsonTest(econ1.lm)
 
 ### Final model
 
-After removing the influential cases, we notice that the standard errors of the model have spiked causing many previously significant terms to become significant. Thus, we will to check if the large standard errors are due to collinearity. 
+After removing the influential cases, we have found our final model.
 ```{r}
 summary(econ1.lm)
-vif(econ1.lm)
-scatterplotMatrix(~Inflation + IntRate + MCapRate, data = econ)
 ```
 
 
