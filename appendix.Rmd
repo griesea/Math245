@@ -233,3 +233,6 @@ plot(resid(econ.lm) ~ fitted(econ.lm), data = econ)
 par(mfrow=c(1,1))
 ```
 
+
+
+###Assumptions
