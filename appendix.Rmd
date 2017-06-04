@@ -213,15 +213,16 @@ par(mfrow=c(1,1))
 
 ###Case Influence Stats
 
-Now we check for case influence stats. We notice that case 6, which is the year 1980 is exerting large influence on our model as it has a Cook's distance of 1.5. As such, we remove the point from our data set.
+Now we check for case influence stats. We notice that case 6, which is the year 1980 is exerting large influence on our model as it has a Cook's distance of 1.5. As such, we remove the point from our data set due to really high inflation.
 ```{r, fig.height=4}
 cooks.distance(test.lm1)
 plot(test.lm1,which=5)
 plot(test.lm1,which=4)
+econ[6,]
 econ1<-econ[-6,]
 ```
 
-Cases 5 and 8 (years) have large Cook's distances but leverage less than 2*p/n. However, case 8 does have a student residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases.
+Cases 5 and 8 (years) have relatively large Cook's distances but leverage less than 2*p/n. However, case 8 does have a studentized residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases. The high Cook's distance value is most likely due to high inflation in both years, especially in 1979.
 ```{r, fig.height=4}
 econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ1)
 summary(econ.lm)
@@ -233,6 +234,8 @@ plot(econ.lm,which=5)
 plot(econ.lm,which=4)
 plot(resid(econ.lm) ~ fitted(econ.lm))
 par(mfrow=c(1,1))
+econ[5,]
+econ[8,]
 ```
 
 
@@ -276,10 +279,11 @@ anova(econ1.lm,econ2.lm)
 
 ###Case Influence Stats
 
-Due to a studentized residual of about -2 and a Cook's distance of nearly 1, we exclude case 5 or the year 1979 from the data set and refit. There are no other significant cases and we move forward this data set and model. Additionally, with the exclusion of this data point we now find SecEducRate is significant.
+Due to a studentized residual of about -2 and a Cook's distance of nearly 1, we exclude case 5 or the year 1979 from the data set and refit. We feel comfortable excluding this data point due to high inflation that year. There are no other significant cases and we move forward this data set and model. Additionally, with the exclusion of this data point we now find SecEducRate is significant.
 ```{r, fig.height=4}
 plot(econ1.lm,which=5)
 cooks.distance(econ1.lm)
+econ1[5,]
 econ2<-econ1[-5,]
 econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ2)
 plot(econ1.lm,which=5)
@@ -306,8 +310,12 @@ durbinWatsonTest(econ1.lm)
 
 ### Final model
 
-After removing the influential cases, we have found our final model.
+After removing the influential cases, we have found our final model and can confirm this with an ANOVA F-test.
 ```{r}
+econ2.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty + President + House + Senate, data = econ2)
+summary(econ2.lm)
+anova(econ1.lm,econ2.lm)
+
 summary(econ1.lm)
 ```
 
