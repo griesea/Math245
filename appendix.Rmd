@@ -223,7 +223,7 @@ econ<-econ[-6,]
 Cases 5 and 8 (years) have large Cook's distances but leverage less than 2*p/n. However, case 8 does have a student residual close to -3, as well. However, since they both do not have a Cook's distance greater than 1 and residuals less than $\pm 2$ we include both cases.
 ```{r, fig.height=4}
 econ.lm <- lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty +President + Senate + House, data = econ)
-summary(test.lm1)
+summary(econ.lm)
 2*15/35
 hatvalues(econ.lm)
 par(mfrow=c(1,3))
@@ -248,9 +248,29 @@ qqline(resid(econ.lm))
 par(mfrow=c(1,1))
 plot(resid(econ.lm)~YEAR, data=econ)
 abline(h=0)
-library(car)
 durbinWatsonTest(econ.lm)
 ```
 
 
 ###Backwards Selection
+
+Not surprisingly, we notice that our categorical political categorical variables are insignificant. Due to the presence of some collinearity, we conduct an ANOVA F test on all three to determine if any are worth including in our model. With a p-value of .61, we fail to reject the null hypothesis that the reduced model is adequate at a 5\% level of significance. As such, we exclude all the political categorical variables.
+
+```{r}
+summary(econ.lm)
+vif(econ.lm)
+econ1.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate +SecEducRate + TerEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+anova(econ1.lm,econ.lm)
+```
+
+We know that high collinearity suggests that the standard errors for coefficients may be larger than usual. Thus, the high VIF value (>5) for SecEducRate may explain its insignificance. Despite all the very large VIF values, every coefficient/explanatory variable is otherwise significant. The standard errors are also relatively small despite the high levels of collinearity. To check for the significance of SecEducRate, we theorize that only PrimEducRate siginificantly impacts GDP. However, the ANOVA F-test shows that this theory is very wrong, as the p-value of excluding both TerEducRate and SecEducRate is .006. Thus, we reject the null hypothesis at a 5\% level of significance that the reduced model is adequate. With no theoretical reason to remove SecEducRate, we seek to include it in our model despite the high t-statistic of 3.812. We attribute this high t-statistic value to the corresponding high VIF value. Thus, this is our final model.
+
+```{r}
+summary(econ1.lm)
+vif(econ1.lm)
+econ2.lm<-lm(GDP_Rate ~ Inflation + IntRate + PrimEducRate + MCapRate+ Population + TradeRatio + Unemployment + S.P500 + Poverty, data = econ)
+anova(econ1.lm,econ2.lm)
+```
+
+
+### Assumptions
