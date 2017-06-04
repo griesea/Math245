@@ -236,3 +236,21 @@ par(mfrow=c(1,1))
 
 
 ###Assumptions
+
+Before we can proceed with backwards selection, we must check the assumptions of our model. The QQ plot has some skewedness in both tails. However, the distribution of the residuals seems to be pretty normal. There is a small amount of left skewedness but it is not too bad. However, it seems there may be autocorrelation, as residuals closer together seem more alike than those farther apart (especially after say 1995). Also, on the basis of a Durbin Watson test, we conclude that there is no postive or negative autocorrleation at a 5\% level of significance. Based on all this info, we conclude the model assumptions are more or less met.
+
+```{r, fig.height = 4}
+par(mfrow=c(1,3))
+plot(econ.lm, which=1)
+hist(resid(econ.lm))
+qqnorm(resid(econ.lm))
+qqline(resid(econ.lm))
+par(mfrow=c(1,1))
+plot(resid(econ.lm)~YEAR, data=econ)
+abline(h=0)
+library(car)
+durbinWatsonTest(econ.lm)
+```
+
+
+###Backwards Selection
