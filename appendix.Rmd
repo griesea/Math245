@@ -337,6 +337,10 @@ econcrisis <- econ[c(30,31),]
 scatterplot(GDP_Rate ~ S.P500 , data=econ2, boxplots = F, smoother=F, xlab = "S&P 500 Annual Total Returns", ylab = "GDP Growth Rate", main = "Plot of GDP growth rate against annual returns of the S&P 500", cex.main = 0.9, ylim = c(-3,6), xlim = c(-0.4,0.4))
 
 points(econcrisis$S.P500, econcrisis$GDP_Rate, pch =15)
+
+scatterplot(GDP_Rate ~ MCapRate , data=econ2, boxplots = F, smoother=F, xlab = "Market Capitalization Rate (% GDP)", ylab = "GDP Growth Rate", main = "Plot of GDP growth rate against the maarket capitalization rate in percent GDP", cex.main = 0.9)
+
+points(econcrisis$S.P500, econcrisis$GDP_Rate, pch =15)
 ```
 
 
@@ -347,7 +351,7 @@ plot(GDP_Rate ~ YEAR , data=econ2, xlab = "YEAR", ylab = "GDP Growth Rate (%)", 
 plot(GDP_Rate ~ Population , data=econ2, xlab = "Total Population (Millions)", ylab = "GDP Growth Rate (%)", cex.main = 0.85)
 par(mfrow = c(1,1))
 
-mtext("GDP growth rate variation with time and population",  outer = F, cex = 1, side = 3, adj = 0.65, padj = -1.5)
+mtext("GDP growth rate variation with time and population",  outer = F, cex = 1, side = 3, adj = 0.48, padj = -1.5)
 ```
 
 Plot to show inflation vs. GDP rate (w/ 1979, 1980 shown).
