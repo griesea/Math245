@@ -362,3 +362,21 @@ points(econcrisis$Inflation, econcrisis$GDP_Rate, pch = 15)
 ```{r, fig.height = 3.5, fig.width = 5.5}
 plot(GDP_Rate ~ MCapRate , data=econ2, xlab = "Market Cap. Growth Rate (%)", ylab = "GDP Growth Rate (%)",main = "Plot of annual GDP growth rate against total market capitalization growth", cex.main = 0.8)
 ``` 
+
+
+
+
+```{r}
+summary(econ1.lm)
+# Market Cap 95% CI
+0.060+c(-1,1)*qt(.975,df=22)*0.01840
+
+# S.P500 95% CI
+-4.64101+c(-1,1)*qt(.975,df=22)*1.67156
+
+# Pop 95% CI
+-0.15190+c(-1,1)*qt(.975,df=22)*0.03936
+
+predict(econ1.lm,newdata = econ2[28,], interval="prediction")
+```
+
